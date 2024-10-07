@@ -1,0 +1,55 @@
+;
+;	File 'topol.top' was generated
+;	By user: sam (501)
+;	On host: 169-231-45-222.wireless.ucsb.edu
+;	At date: Tue Jul 16 14:20:45 2024
+;
+;	This is a standalone topology file
+;
+;	Created by:
+;	                     :-) GROMACS - gmx pdb2gmx, 2021 (-:
+;	
+;	Executable:   /usr/local/gromacs/bin/gmx
+;	Data prefix:  /usr/local/gromacs
+;	Working dir:  /Users/sam/Desktop/Research/hydrophobicity_paper_2/seed_waterstruct_comparison/sideways_seed/C36m
+;	Command line:
+;	  gmx pdb2gmx -f SLS2_sideways.pdb -o SLS2.gro -ignh -ter
+;	Force field was read from current directory or a relative path - path added.
+;
+
+; Include forcefield parameters
+#include "./charmm36-jul2022.ff/forcefield.itp"
+
+; Include chain topologies
+#include "topol_Protein_chain_A.itp"
+#include "topol_Protein_chain_B.itp"
+#include "topol_Protein_chain_C.itp"
+#include "topol_Protein_chain_D.itp"
+#include "topol_Protein_chain_E.itp"
+
+; Include water topology
+#include "./charmm36-jul2022.ff/tip3p.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "./charmm36-jul2022.ff/ions.itp"
+
+[ system ]
+; Name
+Protein in water
+
+[ molecules ]
+; Compound        #mols
+Protein_chain_A     1
+Protein_chain_B     1
+Protein_chain_C     1
+Protein_chain_D     1
+Protein_chain_E     1
+SOL         9306
+CL               5

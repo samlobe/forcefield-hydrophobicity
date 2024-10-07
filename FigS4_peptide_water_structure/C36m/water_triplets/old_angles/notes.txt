@@ -1,0 +1,2 @@
+1 angstrom increments above VLG.
+Slice 7 is significantly higher (14-16 angstroms).
