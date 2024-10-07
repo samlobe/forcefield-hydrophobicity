@@ -1,0 +1,2 @@
+These are for the sideways seed files in pod
+'hydrophobicity_paper_2/seed_waterstruct_comparison/sideways_seed'

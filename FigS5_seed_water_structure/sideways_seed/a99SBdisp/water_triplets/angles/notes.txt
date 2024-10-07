@@ -1,0 +1,1 @@
+Slice 1 is 0-1Å, slice 6 is 5-7Å, and slice 7 is 20-22.5Å.

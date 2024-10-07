@@ -1,0 +1,6 @@
+VLG:
+- `shape rectangle width 16 height 8 slab 1 center 15,15,44`
+    - `python triplet.py ../SLS2_processed.pdb ../traj.dcd --selection "prop x > 7 and prop x < 23 and prop y > 11 and prop y < 19 and prop z > 43.5 and prop z < 44.5" -o 'slice_1' -t 10`
+- `shape rectangle width 16 height 8 slab 2.5 center 15,15,49`
+    - `python triplet.py ../SLS2_processed.pdb ../traj.dcd --selection "prop x > 7 and prop x < 23 and prop y > 11 and prop y < 19 and prop z > 48.5 and prop z < 49.5" -o 'slice_6' -t 10`
+
