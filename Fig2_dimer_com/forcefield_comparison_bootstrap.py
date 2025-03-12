@@ -20,9 +20,9 @@ def array_cleaning(file_name, start_time, simulation_sampling_freq, my_sampling_
 
 simulations = ['a99SBdisp','C36m','a03ws']
 labels = ['a99SBdisp','C36m','a03ws']
-equilibration = [40,0,40] #ns equilibration time from correlation_time2.py
-independent_samples = [667,664,495] # from correlation_time2.py
-dts = [10,2,10] # ps between each frame
+equilibration = [40,60,40] #ns equilibration time from correlation_time2.py
+independent_samples = [667,1234,495] # from correlation_time2.py
+dts = [10,10,10] # ps between each frame
 
 data = [array_cleaning(f'com_distances_{simulation}.csv',equilibration[i],dts[i],dts[i]) for i,simulation in enumerate(simulations)]
 #%% BOOTSTRAP
@@ -34,7 +34,7 @@ for i in range(len(simulations)):
         indices = np.random.choice(len(data[i]),independent_samples[i])
         boot_data = data[i][indices]
         data_bootstrapped[k,:,i] = np.histogram(boot_data,bins=bins,density=False)[0]/len(indices)
-#%% Sort from greatest to least and pull out the 67% confidence interval
+#%% Sort from greatest to least and pull out the 90% confidence interval
 confidence = 0.90
 sorted_frac = np.sort(data_bootstrapped,axis=0)
 il, im, iu = round((1-confidence)/2*bootstrap_num),round(bootstrap_num/2),round((1-(1-confidence)/2)*bootstrap_num)
@@ -53,10 +53,16 @@ for low_row,mean_row,up_row in zip(low_array.T,mean_array.T,up_array.T):
     df.to_csv(f'{labels[counter]}_confidence.csv')
     counter = counter + 1
 
+# plotting the edge of the first and last bin
+bin_mids = np.append(0,bin_mids)
+bin_mids = np.append(bin_mids,5)
+
+
 #%% for final figure
 fig,ax=plt.subplots(figsize=(6,4))
 colors = ['tab:red','#039dfc','black']
 for i,label in enumerate(['a03ws','a99SBdisp','C36m']):
+    print(label)
     com_confidence = pd.read_csv(f'{label}_confidence.csv',index_col=0)
     low = np.append(0,com_confidence['5%'].values)
     low = np.append(low,0)

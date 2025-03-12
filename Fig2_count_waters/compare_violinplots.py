@@ -98,3 +98,4 @@ plt.savefig('violinplot.png',dpi=300)
 # compare the means of the monomers and dimers in each force field
 # all_data.groupby(['Forcefield','Type']).mean()
 all_data.groupby(['Forcefield','Type']).median()
+plt.show()

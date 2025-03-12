@@ -74,7 +74,7 @@ plt.ylabel(r'normalized diffusion $(D/D_{bulk})$', fontsize=16)
 
 # Add shaded region for stretched area
 
-plt.axhspan(custom_transform(cutoff), custom_transform(1.0,cutoff=cutoff,stretch=stretch), color=(0.8,0.8,0.8), alpha=0.3)
+plt.axhspan(custom_transform(cutoff), custom_transform(1.0,cutoff=cutoff,stretch=stretch), color=(0.8,0.8,0.8), alpha=0.2)
 plt.ylim(0.6, 1+0.1*(stretch-1))
 
 # Set custom y-ticks with inverse transformation

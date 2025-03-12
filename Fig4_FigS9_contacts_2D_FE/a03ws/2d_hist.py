@@ -3,9 +3,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('contacts_dimer_a03ws.csv')
-intra_contacts = df['Intrachain']/2
-inter_SPHF6_aligned = df['Interchain SPHF6 Aligned']/2
+df = pd.read_csv('contacts_dimer_a03ws.csv')/2 # avoid double counting
+df = df.iloc[4000:] # 40ns of equilibration for a03ws
+intra_contacts = df['Intrachain']
+inter_SPHF6_aligned = df['Interchain SPHF6 Aligned']
 
 # make 2d histogram of intra and inter
 def free_energy(a, b, T, y0, ymax, x0, xmax):
@@ -18,7 +19,7 @@ def free_energy(a, b, T, y0, ymax, x0, xmax):
 
 fig,ax = plt.subplots()
 
-dG, xedges, yedges = free_energy(inter_SPHF6_aligned, intra_contacts, 300, 0, 25, 0, 65)
+dG, xedges, yedges = free_energy(inter_SPHF6_aligned, intra_contacts, 300, 0, 30, 0, 65)
 dG = dG - np.min(dG)
 im = plt.imshow(dG, interpolation='gaussian', extent=[
             yedges[0], yedges[-1], xedges[0], xedges[-1]], cmap='jet',
@@ -38,6 +39,8 @@ ax.set_xlabel('intrachain contacts',fontsize=16)
 cb.ax.tick_params(labelsize=16)
 plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
+plt.ylim(0,25)
+
 plt.subplots_adjust(bottom=0.15)
 plt.savefig('2dhist_a03ws.png', dpi=300)
 plt.show()

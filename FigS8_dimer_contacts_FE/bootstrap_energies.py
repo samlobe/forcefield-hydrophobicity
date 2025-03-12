@@ -11,9 +11,9 @@ from tqdm import tqdm
 contacts_list = []
 ffs = ['a03ws','a99SBdisp','C36m']
 colors = ['tab:red','#039dfc','black']
-sampling = [10,10,2] # ps
-convergence = [50, 60, 50] # ns
-uncorrelated_samples = [179, 1043, 436]
+sampling = [10,10,10] # ps
+convergence = [50, 50, 50] # ns
+uncorrelated_samples = [424, 177, 353]
 
 for ff in ffs:
     contacts = pd.read_csv(f'contacts_HP2_dimer_{ff}.csv')['Interchain SPHF6 Aligned']

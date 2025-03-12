@@ -1,0 +1,47 @@
+;
+;	File 'topol.top' was generated
+;	By user: sam (501)
+;	On host: 169-231-69-1.wireless.ucsb.edu
+;	At date: Wed Mar 12 00:01:43 2025
+;
+;	This is a standalone topology file
+;
+;	Created by:
+;	                     :-) GROMACS - gmx pdb2gmx, 2021 (-:
+;	
+;	Executable:   /usr/local/gromacs/bin/gmx
+;	Data prefix:  /usr/local/gromacs
+;	Working dir:  /Users/sam/Desktop/Research/forcefield-hydrophobicity/FigS2_TableS2_potEnergy/compact_dimer_C36m/a99SBdisp
+;	Command line:
+;	  gmx pdb2gmx -f compact_dimer.pdb -o SLS2.gro -ignh
+;	Force field was read from current directory or a relative path - path added.
+;
+
+; Include forcefield parameters
+#include "./a99SBdisp.ff/forcefield.itp"
+
+; Include chain topologies
+#include "topol_Protein_chain_A.itp"
+#include "topol_Protein_chain_B.itp"
+
+; Include water topology
+#include "./a99SBdisp.ff/a99SBdisp_water.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "./a99SBdisp.ff/ions.itp"
+
+[ system ]
+; Name
+frame t= 386990.000 in water
+
+[ molecules ]
+; Compound        #mols
+Protein_chain_A     1
+Protein_chain_B     1

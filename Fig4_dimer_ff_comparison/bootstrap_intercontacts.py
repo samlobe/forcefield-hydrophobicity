@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 # a99SBdisp: 50ns equil, 578 uncorrelated samples
 # a03ws: 50ns equil, 812 uncorrelated samples
 # C36m: 0ns equil, 1045 uncorrelated samples (Pritam gave me one with 200ns equil already)
-equilibration_dict = {'a99SBdisp': 50, 'a03ws': 50, 'C36m': 0} # ns
-uncorrelated_samples_dict = {'a99SBdisp': 578, 'a03ws': 812, 'C36m': 1045}
-sampling_dict = {'a99SBdisp': 10, 'a03ws': 10, 'C36m': 2} # ps
+equilibration_dict = {'a99SBdisp': 50, 'a03ws': 50, 'C36m': 50} # ns
+uncorrelated_samples_dict = {'a99SBdisp': 578, 'a03ws': 812, 'C36m': 841}
+sampling_dict = {'a99SBdisp': 10, 'a03ws': 10, 'C36m': 10} # ps
 ffs = ['a03ws','a99SBdisp','C36m']
 confidence_intervals = {}
 
@@ -43,7 +43,7 @@ for ff in ffs:
     confidence_intervals[ff] = [mean, low, high]
 
 #%% Plot bars with error bars
-fig, ax = plt.subplots(figsize=(6,4))
+fig, ax = plt.subplots(figsize=(5,4))
 
 means = np.array([confidence_intervals[ff][0] for ff in ffs])*100
 low = np.array([confidence_intervals[ff][1] for ff in ffs])*100
@@ -57,7 +57,7 @@ colors = ['tab:red', '#039dfc', 'black']
 x = np.arange(len(ffs))
 ax.bar(x, means, yerr=[means-low, high-means], align='center', alpha=1, ecolor='gray', color=colors,capsize=5)
 ax.set_xticks(x)
-fontsize=15
+fontsize=14
 ax.set_xticklabels(ffs,fontsize=fontsize)
 ax.set_xticklabels(['a03ws','a99SBdisp','CHARMM36m'],fontsize=fontsize)
 plt.xlabel('force field',fontsize=fontsize)

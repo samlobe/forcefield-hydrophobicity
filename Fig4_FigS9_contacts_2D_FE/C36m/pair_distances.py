@@ -6,7 +6,7 @@ import mdtraj as md
 from time import time
 
 # load the trajectory
-molecule = 'jR2R3_P301L_dimer'
+molecule = 'HP2_dimer'
 traj = md.load(f'../{molecule}.xtc', top=f'../{molecule}.pdb')
 
 #%%
@@ -49,8 +49,8 @@ one_letter_code = {'ALA':'A','ARG':'R','ASN':'N','ASP':'D','CYS':'C','GLU':'E','
 resname = [one_letter_code[resname[i]] for i in range(len(resname))]
 
 #%%
-chainA_resids = np.arange(1,20)
-chainB_resids = np.arange(22,41)
+chainA_resids = np.arange(0,19)
+chainB_resids = np.arange(19,38)
 my_residues = np.concatenate((chainA_resids,chainB_resids))
 
 # iterate over my residue to get all pairs
@@ -70,4 +70,4 @@ np.save(f'mindist.npy', my_contacts[0])
 df = pd.DataFrame(my_contacts[1], columns=['residue1','residue2'])
 df.to_csv('mindist_pairs.csv', index=False)
 
-
+#%%

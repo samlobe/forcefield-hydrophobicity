@@ -8,6 +8,7 @@ import MDAnalysis as mda
 from tqdm import tqdm
 
 protein_file = 'SLS2_processed.pdb'
+which_residue = 298 # resid from the pdb file (read it from pdb file), assuming no repeated resids
 
 pdb = PDBFile(protein_file)
 top = GromacsTopFile('topol.top', periodicBoxVectors=pdb.topology.getPeriodicBoxVectors())
@@ -23,43 +24,45 @@ constraints = HBonds
 system = top.createSystem(nonbondedMethod=CutoffNonPeriodic, nonbondedCutoff=nonbondedCutoff, constraints=constraints)
 
 #%%
-seed = set([atom.index for atom in pdb.topology.atoms() if atom.residue.chain.id in ('A','B','C','D','E')])
-solvent = set([atom.index for atom in pdb.topology.atoms() if atom.index not in seed])
-print(f'{len(seed)} atoms in seed')
+residue = set([atom.index for atom in pdb.topology.atoms() if atom.residue.chain.id == 'A' and atom.residue.id == str(which_residue)])
+solvent = set([atom.index for atom in pdb.topology.atoms() if atom.index not in residue])
+print(f'{len(residue)} atoms in residue')
 print(f'{len(solvent)} atoms in solvent')
 
 # %%
 # check what force objects there are
 print('Checking the relevant force objects in the system:')
+# Note: amber forcefields puts both coulomb and LJ in customnonbonded force
+# and it looks up sigma and eps values for LJ based on the atom identities
 for force in system.getForces():
     if isinstance(force, NonbondedForce):
         print("\nThere is a NonbondedForce")
         print(f'{force.getNumParticles()} particles')
         print("Some NonbondedForce parameters:")
-        for i in range(5):
-            charge, sigma, epsilon = force.getParticleParameters(i)
-            print(f"Particle {i}: charge={charge}, sigma={sigma}, epsilon={epsilon}")
+        # for i in range(5):
+        #     charge, sigma, epsilon = force.getParticleParameters(i)
+            # print(f"Particle {i}: charge={charge}, sigma={sigma}, epsilon={epsilon}")
 # check the parameters of the CustomNonbondedForce
     if isinstance(force, CustomNonbondedForce):
         print("\nThere is a CustomNonbondedForce")
         print(f'{force.getNumParticles()} particles')
         print(f'Energy Function: {force.getEnergyFunction()}')
         print("Some CustomNonbondedForce parameters:")
-        for i in range(5):
-            print(f'Particle {i}: {force.getParticleParameters(i)}')
+        # for i in range(5):
+        #     print(f'Particle {i}: {force.getParticleParameters(i)}')
 
 #%%
 for force in system.getForces():
     if isinstance(force, NonbondedForce):
         force.setForceGroup(0)
         force.setSwitchingDistance(1.0*nanometers)
-        force.addGlobalParameter("seed_scale", 1)
+        force.addGlobalParameter("residue_scale", 1)
         force.addGlobalParameter("solvent_scale", 1)
         for i in range(force.getNumParticles()):
             charge, sigma, epsilon = force.getParticleParameters(i)
             # Set the parameters to be 0 when the corresponding parameter is 0,
             # and to have their normal values when it is 1.
-            param = "seed_scale" if i in seed else "solvent_scale"
+            param = "residue_scale" if i in residue else "solvent_scale"
             # print(i, param)
             force.setParticleParameters(i, 0, 0, 0)
             force.addParticleParameterOffset(param, i, charge, sigma, epsilon)
@@ -72,7 +75,7 @@ for force in system.getForces():
         # print("This is a CustomNonbondedForce")
         force.setForceGroup(1)
         force.setSwitchingDistance(1.0*nanometers)
-        force.addInteractionGroup(seed, solvent)
+        force.addInteractionGroup(residue, solvent)
     else:
         # print the name of the force object
         # print(force)
@@ -84,8 +87,8 @@ integrator = VerletIntegrator(0.001*picosecond)
 context = Context(system, integrator)
 
 # evaluate coulomb energy between chains
-def coulomb_energy(seed_scale, solvent_scale):
-    context.setParameter("seed_scale", seed_scale)
+def coulomb_energy(residue_scale, solvent_scale):
+    context.setParameter("residue_scale", residue_scale)
     context.setParameter("solvent_scale", solvent_scale)
     return context.getState(getEnergy=True, groups={0}).getPotentialEnergy()
 
@@ -103,12 +106,12 @@ for frame in tqdm(np.arange(0, n_frames, 10)):
     context.setPositions(u.atoms.positions / 10 * nanometers)
     
     total_coulomb = coulomb_energy(1, 1)
-    seed_coulomb = coulomb_energy(1, 0)
+    residue_coulomb = coulomb_energy(1, 0)
     solvent_coulomb = coulomb_energy(0, 1)
     # print(f"Total coulombic potential energy:\n{total_coulomb}")
-    # print(f"Seed coulombic potential energy:\n{seed_coulomb}")
+    # print(f"residue coulombic potential energy:\n{residue_coulomb}")
     # print(f"Solvent coulombic potential energy:\n{solvent_coulomb}")
-    coul_energy = total_coulomb - seed_coulomb - solvent_coulomb
+    coul_energy = total_coulomb - residue_coulomb - solvent_coulomb
     coul_energies.append(coul_energy.value_in_unit(kilojoules_per_mole))
     # print(f"Coulombic potential energy:\n{coul_energy.value_in_unit(kilojoules_per_mole):.0f} kJ/mol")
     
@@ -119,7 +122,7 @@ for frame in tqdm(np.arange(0, n_frames, 10)):
 #%%
 # save the energies to a file
 energies = pd.DataFrame({'coulomb': coul_energies, 'lj': lj_energies})
-energies.to_csv('seed_water_potential.csv', index=False)
+energies.to_csv(f'residue_water_potential_resid_{which_residue}.csv', index=False)
 
 # %%
 
@@ -129,6 +132,7 @@ plt.hist(coul_energies, bins=100)
 plt.xlabel('Coulombic Potential Energy (kJ/mol)')
 plt.ylabel('Frequency')
 plt.title('Histogram of Coulombic Potential Energy')
+plt.show()
 
 # histogram of the LJ potential energy
 plt.hist(lj_energies, bins=100)

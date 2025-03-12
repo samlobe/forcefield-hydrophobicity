@@ -74,9 +74,9 @@ for csv_file in tqdm(csv_files):
 test_equil_times = np.arange(0,200,10)
 num_uncorrelated_samples = []
 file_path = 'contacts_HP2_dimer_C36m.csv'
-sim_sampling = 2 #ps
+sim_sampling = 10 #ps
 my_sampling = 20 #ps
-total_sim_time = 300 # ns
+total_sim_time = 500 # ns
 integrate_to = 5000 #ps
 for equil in tqdm(test_equil_times):
     # Load the data
@@ -94,4 +94,5 @@ plt.ylabel('number of uncorrelated samples',fontsize=15)
 
 # a99SBdisp: 50ns equil, 578 uncorrelated samples
 # a03ws: 50ns equil, 812 uncorrelated samples
-# C36m: 0ns equil, 1045 uncorrelated samples (Pritam gave me one with 200ns equil already)
+# C36m: 50ns equil, 841 uncorrelated samples (Pritam gave me one with 200ns equil already)
+#%%

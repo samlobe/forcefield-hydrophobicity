@@ -11,14 +11,6 @@ distances = np.load('mindist.npy')  # Adjust the file path if needed
 # Load the CSV with residue pairs
 residue_pairs = pd.read_csv('mindist_pairs.csv')
 
-# Define a mapping from original residue indices to 0-based indices
-# Because Pritam's simulation had ACE and NME caps (C36m)
-def map_residue_index(original_index):
-    if original_index <= 19:
-        return original_index - 1  # Maps 1-19 to 0-18
-    else:
-        return original_index - 3  # Maps 21-40 to 19-38
-
 # Dimensions based on your data
 n_frames = distances.shape[0]
 n_pairs = distances.shape[1]
@@ -36,8 +28,8 @@ distance_matrix = np.zeros((tot_residues, tot_residues, n_frames))
 
 # Populate the distance matrix using mapped indices
 for pair_index, (i, j) in enumerate(zip(residue_pairs['residue1'], residue_pairs['residue2'])):
-    mapped_i = map_residue_index(i)
-    mapped_j = map_residue_index(j)
+    mapped_i = i
+    mapped_j = j
     distance_matrix[mapped_i, mapped_j, :] = distances[:, pair_index]
     distance_matrix[mapped_j, mapped_i, :] = distances[:, pair_index]  # Symmetric
 
@@ -173,8 +165,12 @@ plt.ylabel('Frequency')
 # plot the time evolution of the interchain contacts
 plt.figure()
 plt.plot(interchain_SPHF6_contacts, lw=0.1)
+plt.xlabel('Frame')
+plt.ylabel('Interchain SPHF6 Aligned Contacts')
 
 #%%
 # create a df
 df = pd.DataFrame({'Intrachain': intra_contacts, 'Interchain SPHF6 Aligned': interchain_SPHF6_contacts})
 df.to_csv('contacts_dimer_C36m.csv', index=False)
+
+#%%

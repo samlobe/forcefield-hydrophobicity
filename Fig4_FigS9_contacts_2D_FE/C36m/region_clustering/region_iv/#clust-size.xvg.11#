@@ -1,0 +1,23 @@
+# This file was created Wed Mar  5 23:16:02 2025
+# Created by:
+#                      :-) GROMACS - gmx cluster, 2021 (-:
+# 
+# Executable:   /usr/local/gromacs/bin/gmx
+# Data prefix:  /usr/local/gromacs
+# Working dir:  /Users/sam/Desktop/Research/forcefield-hydrophobicity/redoing_C36m/C36m_HP2_dimers/Fig4_FigS9_contacts_2D_FE/C36m/region_clustering/region_iv
+# Command line:
+#   gmx cluster -f ../C36m_regioniv.xtc -s ../HP2_dimer.tpr -method gromos -wcl 10 -cutoff 0.40 -sz -skip 5
+# gmx cluster is part of G R O M A C S:
+#
+# Guyana Rwanda Oman Macau Angola Cameroon Senegal
+#
+@    title "Cluster Sizes"
+@    xaxis  label "Cluster #"
+@    yaxis  label "# Structures"
+@TYPE xy
+@g0 type bar
+       1       64
+       2        1
+       3        1
+       4        1
+       5        1

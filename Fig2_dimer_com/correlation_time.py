@@ -12,16 +12,20 @@ labels = ['a99SBdisp','C36m','a03ws']
 files = {'a99SBdisp':'com_distances_a99SBdisp.csv',
          'C36m':'com_distances_C36m.csv',
          'a03ws':'com_distances_a03ws.csv'}
-sampling_freqs = {'a99SBdisp':10,'C36m':2,'a03ws':10}
+sampling_freqs = {'a99SBdisp':10,'C36m':10,'a03ws':10}
 # load the number of intermolecular hydrogen bond per frame (created with  `gmx hbond ...` with mainchain+H selected for each monomer)
 data = []
 for ff in ffs:
     data.append(np.loadtxt(f'com_distances_{ff}.csv',skiprows=1))
 
 #%%
-df = pd.DataFrame(np.vstack((data,list(sampling_freqs.values()))),
-                  index=['com_distance','sampling_freq'],
-                  columns=labels)
+# df = pd.DataFrame(np.vstack((data,list(sampling_freqs.values()))),
+#                   index=['com_distance','sampling_freq'],
+#                   columns=labels)
+df = {}
+for i,ff in enumerate(ffs):
+    df[ff] = {'com_distance':data[i],'sampling_freq':sampling_freqs[ff]}
+
 
 #%%
 # this will pull out the 2nd column of your textfile. There can't be any comments or it wont work.
@@ -54,14 +58,14 @@ colVar = array_cleaning(files[which_ff],0,sim_sampling,my_sampling)
 print(f'Looking at the variable in {files[which_ff]}:\n')
 
 ## CALCULATE AUTOCORRELATION TIME OVER THE FULL SIMULATION (autoc_time = 1/2 statistical inefficiency)
-full_autoc_time = my_sampling * timeseries.integratedAutocorrelationTime(colVar)
+full_autoc_time = my_sampling * timeseries.integrated_autocorrelation_time(colVar)
 print(f'The autocorrelation time over the FULL simulation is {full_autoc_time:.0f} ps')
 
 ## CALCULATE AUTOCORRELATION TIME FROM <block_start> ns to <block end> ns
 if calc_autoc_in_block == True:
     xx = block_start * 1000 / my_sampling
     yy = block_end   * 1000 / my_sampling
-    autoc_from_xx_to_yy = my_sampling * timeseries.integratedAutocorrelationTime(colVar[int(xx):int(yy)])
+    autoc_from_xx_to_yy = my_sampling * timeseries.integrated_autocorrelation_time(colVar[int(xx):int(yy)])
     print(f'The autocorrelation time from {block_start}-{block_end}ns is {autoc_from_xx_to_yy:.0f} ps')
 
 ## SEE HOW AUTOCORRELATION TIME CHANGES THROUGHOUT THE SIMULATION
@@ -77,7 +81,7 @@ if plot_autoc_over_time == True:
     for time in times:
         begin = time * 1000 / my_sampling # index of data to begin
         end = begin + (100 * 1000) / my_sampling # index of data to end (100ns after begin)
-        autoc_100ns_block.append(my_sampling * timeseries.integratedAutocorrelationTime(colVar[int(begin):int(end)])) # calculates autocorrelation time for that 100ns block
+        autoc_100ns_block.append(my_sampling * timeseries.integrated_autocorrelation_time(colVar[int(begin):int(end)])) # calculates autocorrelation time for that 100ns block
     plt.plot(times,autoc_100ns_block,'o',label = file_name)
         
     plt.xlabel('time (ns)',fontsize=20)
@@ -103,7 +107,7 @@ for i,equilibration in enumerate(tqdm(equilibration_times)):
     starti = int(equilibration*1000/time_step) # index of the first frame to use
     skip = int(my_sampling/time_step) # number of frames to skip
     colVar = data[starti::skip]
-    C_n = timeseries.normalizedFluctuationCorrelationFunction(colVar) # compute the autocorrelation function
+    C_n = timeseries.normalized_fluctuation_correlation_function(colVar) # compute the autocorrelation function
     xs = np.arange(len(C_n)) * my_sampling / 1000
     # Decide how much of the autocorrelation function to integrate based on the plot
     plt.plot(xs,C_n,lw=1,label=f'{equilibration} ns equil')
@@ -132,7 +136,7 @@ print(f'{uncorrelated_samples} uncorrelated samples for {which_data}')
 
 ### NOTES
 # SLS2_a99SB-disp:  40ns equilibration, 667 uncorrelated samples
-# SLS2_CHARMM36m:    0ns (which is really 200ns) equilibration, 664 uncorrelated samples
+# SLS2_CHARMM36m:   60ns equilibration, 1234 uncorrelated samples
 # SLS2_a03ws:       40ns equilibration, 495 uncorrelated samples
 
 
