@@ -15,6 +15,8 @@ for forcefield in forcefields:
         data = pd.read_csv(f'{forcefield}_{type}.csv',index_col=0)
         if type == 'dimer':
             data = data / 2 # per monomer
+        print(f'{forcefield} {type} mean: {np.mean(data.values)}')
+
         data['Forcefield'] = forcefield
         data['Type'] = type
         all_data = pd.concat([all_data, data])

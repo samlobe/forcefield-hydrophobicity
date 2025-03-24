@@ -22,9 +22,9 @@ simulations = ['jR2R3_dimer_a03ws_inter_hbond.xvg','jR2R3_dimer_a99SBdisp_inter_
                'jR2R3_P301L_dimer_a03ws_inter_hbond.xvg','jR2R3_P301L_dimer_a99SBdisp_inter_hbond.xvg','jR2R3_P301L_dimer_C36m_inter_hbond.xvg']
 labels = ['jR2R3_a03ws','jR2R3_a99SBdisp','jR2R3_C36m',
           'jR2R3_P301L_a03ws','jR2R3_P301L_a99SBdisp','jR2R3_P301L_C36m']
-equilibration = [240,100,40,60,60,0] #ns equilibration time from correlation_time2.py
-independent_samples = [494,604,397,288,475,637] # from correlation_time2.py
-dts = [10,10,2,10,10,2] # ps between each frame
+equilibration = [240,100,150,60,60,100] #ns equilibration time from correlation_time.py helper script
+independent_samples = [494,604,1183,288,475,894] # from correlation_time.py helper script
+dts = [10,10,10,10,10,10] # ps between each frame
 
 data = [array_cleaning(simulation,equilibration[i],dts[i],dts[i]) for i,simulation in enumerate(simulations)]
 #%% BOOTSTRAP
@@ -69,7 +69,7 @@ for i,label in enumerate(labels[0:3]):
     errors[0,:] = means - hbond_confidence['5%']
     errors[1,:] = hbond_confidence['95%'] - means
     plt.bar(np.arange(len(bins))+width*i,means*100,yerr=errors*100,align='edge',
-            width=width,label=label[6:],color=colors[i])
+            width=width,label=label[6:],color=colors[i],ecolor='gray')
 plt.legend(fontsize=14)
 plt.xticks(np.arange(len(bins))+.3,bins,fontsize=14)
 plt.yticks(fontsize=14)
@@ -93,7 +93,7 @@ for i,label in enumerate(labels[3:]):
     errors[0,:] = means - hbond_confidence['5%']
     errors[1,:] = hbond_confidence['95%'] - means
     plt.bar(np.arange(len(bins))+width*i,means*100,yerr=errors*100,align='edge',
-            width=width,label=label[12:],color=colors[i])
+            width=width,label=label[12:],color=colors[i],ecolor='gray')
 plt.legend(fontsize=14)
 plt.xticks(np.arange(len(bins))+.3,bins,fontsize=14)
 plt.yticks(fontsize=14)
